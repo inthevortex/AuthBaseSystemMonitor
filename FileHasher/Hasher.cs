@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -28,6 +29,17 @@ namespace FileHasher
         public void CreateJsonFile(Hashes hashes)
         {
             System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\hashes.json", JsonConvert.SerializeObject(hashes, Formatting.Indented));
+        }
+
+        public void ExecuteChecksum()
+        {
+            Process process = new Process();
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\checksum.exe";
+            process.Start();
+            string output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
         }
 
         public Hashes GetHashes()
