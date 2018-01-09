@@ -61,6 +61,7 @@ namespace FileHasher
             var accessControl = fileInfo.GetAccessControl();
             var x = accessControl.GetOwner(typeof(System.Security.Principal.SecurityIdentifier));
             var y = accessControl.GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
+            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(files[0]);
 
             foreach (string file in files)
             {
