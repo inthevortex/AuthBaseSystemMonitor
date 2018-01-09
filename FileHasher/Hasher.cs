@@ -31,35 +31,47 @@ namespace FileHasher
             System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\hashes.json", JsonConvert.SerializeObject(hashes, Formatting.Indented));
         }
 
-        public void ExecuteChecksum()
+        private string GetHash(string filename, string hashAlgorithm = "SHA256")
         {
-            Process process = new Process();
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\checksum.exe";
-            process.Start();
-            string output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
+            string output = "";
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                UseShellExecute = false,
+                CreateNoWindow = false,
+                RedirectStandardOutput = true,
+                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\FileHasher\Resources\checksum.exe",
+                Arguments = "/a:" + hashAlgorithm + " " + filename
+            };
+
+            using (Process process = Process.Start(startInfo))
+            {
+                output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+            }
+
+            return output.Substring(output.IndexOf("Hash:") + 5).Trim();
         }
 
         public Hashes GetHashes()
         {
             Hashes hashes = new Hashes();
             List<string> files = GetFileList(_paths, _fileSearchPattern);
+            FileInfo fileInfo = new FileInfo(files[0]);
+            //System.IO.File file = new System.IO.File()
+            var accessControl = fileInfo.GetAccessControl();
+            var x = accessControl.GetOwner(typeof(System.Security.Principal.SecurityIdentifier));
+            var y = accessControl.GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
 
             foreach (string file in files)
             {
                 try
                 {
-                    using (FileStream fStream = System.IO.File.OpenRead(file))
+                    hashes.Files.Add(new File
                     {
-                        hashes.Files.Add(new File
-                        {
-                            Name = file.Substring(file.LastIndexOf("\\") + 1),
-                            Path = file,
-                            Hash = GetHash<MD5>(fStream)
-                        });
-                    }
+                        Name = file.Substring(file.LastIndexOf("\\") + 1),
+                        Path = file,
+                        Hash = GetHash(file)
+                    });
                 }
                 catch (IOException)
                 {
@@ -72,21 +84,21 @@ namespace FileHasher
             return hashes;
         }
 
-        private string GetHash<T>(Stream stream) where T : HashAlgorithm
-        {
-            StringBuilder sb = new StringBuilder();
+        //private string GetHash<T>(Stream stream) where T : HashAlgorithm
+        //{
+        //    StringBuilder sb = new StringBuilder();
 
-            MethodInfo create = typeof(T).GetMethod("Create", new Type[] { });
-            using (T crypt = (T)create.Invoke(null, null))
-            {
-                byte[] hashBytes = crypt.ComputeHash(stream);
-                foreach (byte bt in hashBytes)
-                {
-                    sb.Append(bt.ToString("x2"));
-                }
-            }
-            return sb.ToString();
-        }
+        //    MethodInfo create = typeof(T).GetMethod("Create", new Type[] { });
+        //    using (T crypt = (T)create.Invoke(null, null))
+        //    {
+        //        byte[] hashBytes = crypt.ComputeHash(stream);
+        //        foreach (byte bt in hashBytes)
+        //        {
+        //            sb.Append(bt.ToString("x2"));
+        //        }
+        //    }
+        //    return sb.ToString();
+        //}
 
         private List<string> GetFileList(string[] paths, string fileSearchPattern)
         {

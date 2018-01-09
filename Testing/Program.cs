@@ -69,31 +69,32 @@ namespace Testing
         //    hasher.CreateJsonFile(hashes);
         //}
 
-        static void Main(string[] args)
-        {
-            var processes = Process.GetProcesses();
-            //ProcessObject[] processObjects = new ProcessObject[processes.Length];
-            //MapProcessObject mapProcessObject = new MapProcessObject();
-            //int index = 0;
-
-            //foreach (var process in processes)
-            //{
-            //    processObjects[index++] = mapProcessObject.TransformToProcessObject(process);
-            //}
-
-            //try
-            //{
-            //    System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\ProcessStats.json", JsonConvert.SerializeObject(processObjects, Formatting.Indented));
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
-        }
-
         //static void Main(string[] args)
         //{
+        //var processes = Process.GetProcesses();
+        //ProcessObject[] processObjects = new ProcessObject[processes.Length];
+        //MapProcessObject mapProcessObject = new MapProcessObject();
+        //int index = 0;
 
+        //foreach (var process in processes)
+        //{
+        //    processObjects[index++] = mapProcessObject.TransformToProcessObject(process);
         //}
+
+        //try
+        //{
+        //    System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\ProcessStats.json", JsonConvert.SerializeObject(processObjects, Formatting.Indented));
+        //}
+        //catch (Exception)
+        //{
+        //    throw;
+        //}
+        //}
+
+        static void Main(string[] args)
+        {
+            Hasher hasher = new Hasher(new string[] { @"D:\Angsuman\Repos\Platform_IMS\Appalachian\Appalachian_Development\Source\BizDIMS\FUNBizDIMS" }, "*");
+            Hashes hashes = hasher.GetHashes();
+        }
     }
 }
