@@ -1,11 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace FileHasher
 {
@@ -26,52 +22,31 @@ namespace FileHasher
             _fileSearchPattern = fileSearchPattern;
         }
 
-        public void CreateJsonFile(Hashes hashes)
+        public void CreateJsonFile(List<File> files)
         {
-            System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\hashes.json", JsonConvert.SerializeObject(hashes, Formatting.Indented));
+            System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\hashes.json", JsonConvert.SerializeObject(files, Formatting.Indented));
         }
 
-        private string GetHash(string filename, string hashAlgorithm = "SHA256")
+        public List<File> HashSystem()
         {
-            string output = "";
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                UseShellExecute = false,
-                CreateNoWindow = false,
-                RedirectStandardOutput = true,
-                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\FileHasher\Resources\checksum.exe",
-                Arguments = "/a:" + hashAlgorithm + " " + filename
-            };
+            Dictionary<string, FileInfoWithVersion> filePathsWithInfo = GetFileList(_paths, _fileSearchPattern);
+            List<File> files = new List<File>();
 
-            using (Process process = Process.Start(startInfo))
-            {
-                output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-            }
-
-            return output.Substring(output.IndexOf("Hash:") + 5).Trim();
-        }
-
-        public Hashes GetHashes()
-        {
-            Hashes hashes = new Hashes();
-            List<string> files = GetFileList(_paths, _fileSearchPattern);
-            FileInfo fileInfo = new FileInfo(files[0]);
-            //System.IO.File file = new System.IO.File()
-            var accessControl = fileInfo.GetAccessControl();
-            var x = accessControl.GetOwner(typeof(System.Security.Principal.SecurityIdentifier));
-            var y = accessControl.GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
-            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(files[0]);
-
-            foreach (string file in files)
+            foreach (string path in filePathsWithInfo.Keys)
             {
                 try
                 {
-                    hashes.Files.Add(new File
+                    files.Add(new File
                     {
-                        Name = file.Substring(file.LastIndexOf("\\") + 1),
-                        Path = file,
-                        Hash = GetHash(file)
+                        Name = path.Substring(path.LastIndexOf("\\") + 1),
+                        Path = path,
+                        Hash = GetHash(path),
+                        CreationTimeUtc = filePathsWithInfo[path].FileInfo.CreationTimeUtc,
+                        LastAccessedTimeUtc = filePathsWithInfo[path].FileInfo.LastAccessTimeUtc,
+                        LastWriteTimeUtc = filePathsWithInfo[path].FileInfo.LastWriteTimeUtc,
+                        Length = filePathsWithInfo[path].FileInfo.Length,
+                        ReadOnly = filePathsWithInfo[path].FileInfo.IsReadOnly,
+                        Version = filePathsWithInfo[path].FileVersionInfo.FileVersion
                     });
                 }
                 catch (IOException)
@@ -80,9 +55,9 @@ namespace FileHasher
                 }
             }
 
-            Console.WriteLine("Number of files hashes is {0}.", hashes.Files.Count);
+            //Console.WriteLine("Number of files hashes is {0}.", files.Count);
 
-            return hashes;
+            return files;
         }
 
         //private string GetHash<T>(Stream stream) where T : HashAlgorithm
@@ -101,16 +76,43 @@ namespace FileHasher
         //    return sb.ToString();
         //}
 
-        private List<string> GetFileList(string[] paths, string fileSearchPattern)
+        private string GetHash(string filename, string hashAlgorithm = "SHA256")
         {
-            List<string> files = new List<string>();
+            string output = "";
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                UseShellExecute = false,
+                CreateNoWindow = false,
+                RedirectStandardOutput = true,
+                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\checksum.exe",
+                Arguments = "/a:" + hashAlgorithm + " " + filename
+            };
+
+            using (Process process = Process.Start(startInfo))
+            {
+                output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+            }
+
+            return output.Substring(output.IndexOf("Hash:") + 5).Trim();
+        }
+
+        private Dictionary<string, FileInfoWithVersion> GetFileList(string[] paths, string fileSearchPattern)
+        {
+            List<string> filePaths = new List<string>();
+            Dictionary<string, FileInfoWithVersion> files = new Dictionary<string, FileInfoWithVersion>();
 
             foreach (string path in paths)
             {
-                files.AddRange(GetFileList(path, fileSearchPattern));
+                filePaths.AddRange(GetFileList(path, fileSearchPattern));
             }
 
-            Console.WriteLine("FileList has {0} files.", files.Count);
+            foreach (string file in filePaths)
+            {
+                files.Add(file, new FileInfoWithVersion(file));
+            }
+
+            //Console.WriteLine("FileList has {0} files.", filePaths.Count);
 
             return files;
         }
@@ -129,7 +131,7 @@ namespace FileHasher
                 {
                     tmp = Directory.GetFiles(rootFolderPath, fileSearchPattern);
                 }
-                catch (UnauthorizedAccessException)
+                catch (System.UnauthorizedAccessException)
                 {
                     continue;
                 }

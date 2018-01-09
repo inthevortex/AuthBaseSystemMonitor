@@ -94,7 +94,7 @@ namespace Testing
         static void Main(string[] args)
         {
             Hasher hasher = new Hasher(new string[] { @"D:\Angsuman\Repos\Platform_IMS\Appalachian\Appalachian_Development\Source\BizDIMS\FUNBizDIMS" }, "*");
-            Hashes hashes = hasher.GetHashes();
+            Hashes hashes = hasher.HashSystem();
         }
     }
 }
