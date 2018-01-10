@@ -93,8 +93,27 @@ namespace Testing
 
         static void Main(string[] args)
         {
-            Hasher hasher = new Hasher(new string[] { @"D:\Angsuman\Repos\Platform_IMS\Appalachian\Appalachian_Development\Source\BizDIMS\FUNBizDIMS" }, "*");
-            Hashes hashes = hasher.HashSystem();
+            //Hasher hasher = new Hasher(new string[] { @"D:\Angsuman\Repos\Platform_IMS\Appalachian\Appalachian_Development\Source\BizDIMS\FUNBizDIMS" }, "*");
+
+            RunTest("devenv");
+        }
+
+        private static void RunTest(string appName)
+        {
+            bool done = false;
+            PerformanceCounter total_cpu = new PerformanceCounter("Process", "% Processor Time", "_Total");
+            PerformanceCounter process_cpu = new PerformanceCounter("Process", "% Processor Time", appName);
+            PerformanceCounter total_mem = new PerformanceCounter("Memory", "Available MBytes");
+
+            while (!done)
+            {
+                float t = total_cpu.NextValue();
+                float p = process_cpu.NextValue();
+                float m = total_mem.NextValue();
+
+                Console.WriteLine(String.Format("CPU: _Total = {0}  App = {1} {2}%\n Memory: {3}\n", t, p, p / t * 100, m));
+                System.Threading.Thread.Sleep(1000);
+            }
         }
     }
 }
