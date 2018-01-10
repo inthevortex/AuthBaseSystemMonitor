@@ -12,8 +12,8 @@ namespace FileHasher
 
         public Hasher()
         {
-            _paths = new string[] { @"C:\Windows", @"C:\Program Files", @"C:\Program Files (x86)", @"C:\Users" };
-            _fileSearchPattern = "*";
+            _paths = new string[] { "" };
+            _fileSearchPattern = "";
         }
 
         public Hasher(string[] paths, string fileSearchPattern)
@@ -24,7 +24,7 @@ namespace FileHasher
 
         public void CreateJsonFile(List<File> files)
         {
-            System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\hashes.json", JsonConvert.SerializeObject(files, Formatting.Indented));
+            System.IO.File.WriteAllText(@"C:\hashes.json", JsonConvert.SerializeObject(files, Formatting.Indented));
         }
 
         public List<File> HashSystem()
@@ -55,28 +55,12 @@ namespace FileHasher
                 }
             }
 
-            //Console.WriteLine("Number of files hashes is {0}.", files.Count);
+            System.Console.WriteLine("Number of files hashes is {0}.", files.Count);
 
             return files;
         }
 
-        //private string GetHash<T>(Stream stream) where T : HashAlgorithm
-        //{
-        //    StringBuilder sb = new StringBuilder();
-
-        //    MethodInfo create = typeof(T).GetMethod("Create", new Type[] { });
-        //    using (T crypt = (T)create.Invoke(null, null))
-        //    {
-        //        byte[] hashBytes = crypt.ComputeHash(stream);
-        //        foreach (byte bt in hashBytes)
-        //        {
-        //            sb.Append(bt.ToString("x2"));
-        //        }
-        //    }
-        //    return sb.ToString();
-        //}
-
-        private string GetHash(string filename, string hashAlgorithm = "SHA256")
+        public string GetHash(string filename, string hashAlgorithm = "SHA256")
         {
             string output = "";
             ProcessStartInfo startInfo = new ProcessStartInfo
@@ -112,7 +96,7 @@ namespace FileHasher
                 files.Add(file, new FileInfoWithVersion(file));
             }
 
-            //Console.WriteLine("FileList has {0} files.", filePaths.Count);
+            System.Console.WriteLine("FileList has {0} files.", filePaths.Count);
 
             return files;
         }
@@ -131,7 +115,7 @@ namespace FileHasher
                 {
                     tmp = Directory.GetFiles(rootFolderPath, fileSearchPattern);
                 }
-                catch (System.UnauthorizedAccessException)
+                catch (System.Exception)
                 {
                     continue;
                 }

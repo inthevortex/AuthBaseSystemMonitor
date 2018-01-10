@@ -14,6 +14,8 @@ namespace AuthBaseMonitoringService
 {
     public partial class AuthBaseMonitoringService : ServiceBase
     {
+        private int eventId = 1;
+
         public AuthBaseMonitoringService()
         {
             InitializeComponent();
@@ -33,7 +35,27 @@ namespace AuthBaseMonitoringService
 
         protected override void OnStart(string[] args)
         {
+            ProcessFunctions processFunctions = new ProcessFunctions();
+
             monitoringLog.WriteEntry("Monitor started");
+
+            monitoringLog.WriteEntry("Checking hashes of currently running processes");
+            var unmatched = processFunctions.UnmatchedHash(out string filename);
+
+            if (unmatched.Count != 0)
+            {
+                //ProcessStartInfo startInfo = new ProcessStartInfo
+                //{
+                //    UseShellExecute = true,
+                //    CreateNoWindow = false,
+                //    WindowStyle = ProcessWindowStyle.Normal,
+                //    FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\Resources\DialogDisplay.exe",
+                //    Arguments = filename
+                //};
+                //Process.Start(startInfo);
+
+                System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay(new string[] { filename }));
+            }
 
             Timer readProcessesTimer = new Timer
             {
@@ -45,19 +67,9 @@ namespace AuthBaseMonitoringService
 
         private void OnReadProcessesTimer(object sender, ElapsedEventArgs e)
         {
-            monitoringLog.WriteEntry("Reading processes", EventLogEntryType.Information);
+            monitoringLog.WriteEntry("Reading processes", EventLogEntryType.Information, eventId++);
 
-            var processes = Process.GetProcesses();
-            ProcessObject[] processObjects = new ProcessObject[processes.Length];
-            MapProcessObject mapProcessObject = new MapProcessObject();
-            int index = 0;
-
-            foreach (var process in processes)
-            {
-                processObjects[index++] = mapProcessObject.TransformToProcessObject(process);
-            }
-
-            mapProcessObject.WriteToJsonFile(processObjects);
+            
         }
 
         protected override void OnStop()
