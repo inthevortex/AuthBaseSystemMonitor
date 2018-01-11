@@ -44,16 +44,6 @@ namespace AuthBaseMonitoringService
 
             if (unmatched.Count != 0)
             {
-                //ProcessStartInfo startInfo = new ProcessStartInfo
-                //{
-                //    UseShellExecute = true,
-                //    CreateNoWindow = false,
-                //    WindowStyle = ProcessWindowStyle.Normal,
-                //    FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\Resources\DialogDisplay.exe",
-                //    Arguments = filename
-                //};
-                //Process.Start(startInfo);
-
                 System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay(new string[] { filename }));
             }
 

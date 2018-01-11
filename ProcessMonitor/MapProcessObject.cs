@@ -36,7 +36,7 @@ namespace ProcessMonitor
                     ModuleName = process.MainModule.ModuleName,
                     FileName = process.MainModule.FileName,
                     ModuleMemorySize = process.MainModule.ModuleMemorySize,
-                    FileVersionInfo = process.MainModule.FileVersionInfo
+                    Version = process.MainModule.FileVersionInfo.FileVersion
                 };
                 processObject.MainWindowTitle = process.MainWindowTitle;
                 processObject.MachineName = process.MachineName;
@@ -55,11 +55,11 @@ namespace ProcessMonitor
         {
             ProcessObject processObject = new ProcessObject();
             Hasher hasher = new Hasher();
-            string hash = hasher.GetHash(process.MainModule.FileName);
 
             try
             {
-                processObject.HashMatched = CheckHash(hash);
+                processObject.Hash = hasher.GetHash(process.MainModule.FileName);
+                processObject.HashMatched = CheckHash(processObject.Hash);
                 processObject.ProcessPriorityClass = process.PriorityClass;
                 processObject.PrivilegedProcessorTime = process.PrivilegedProcessorTime;
                 processObject.ProcessName = process.ProcessName;
@@ -71,7 +71,7 @@ namespace ProcessMonitor
                     ModuleName = process.MainModule.ModuleName,
                     FileName = process.MainModule.FileName,
                     ModuleMemorySize = process.MainModule.ModuleMemorySize,
-                    FileVersionInfo = process.MainModule.FileVersionInfo
+                    Version = process.MainModule.FileVersionInfo.FileVersion
                 };
                 processObject.MainWindowTitle = process.MainWindowTitle;
                 processObject.MachineName = process.MachineName;
@@ -88,7 +88,9 @@ namespace ProcessMonitor
 
         private bool CheckHash(string hash)
         {
-            return System.IO.File.ReadAllText(@"C:\hashes.json").Contains(hash);
+            string json = System.IO.File.ReadAllText(@"C:\hashes.json");
+
+            return json.Contains(hash);
         }
 
         public void WriteToJsonFile(ProcessObject[] processObjects)

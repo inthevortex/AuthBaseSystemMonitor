@@ -8,6 +8,6 @@ namespace ProcessMonitor
         public string ModuleName { get; set; }
         public string FileName { get; set; }
         public int ModuleMemorySize { get; set; }
-        public FileVersionInfo FileVersionInfo { get; set; }
+        public string Version { get; set; }
     }
 }

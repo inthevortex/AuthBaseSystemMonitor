@@ -29,7 +29,7 @@ namespace DialogDisplay
         public DialogDisplay(string[] args)
         {
             InitializeComponent();
-            SetSource(args);
+            SetSource(args[0]);
             InitializeDataGridView();
             Controls.Add(dataGridView1);
         }
@@ -50,8 +50,8 @@ namespace DialogDisplay
 
             DataGridViewColumn col2 = new DataGridViewTextBoxColumn
             {
-                DataPropertyName = "MainWindowTitle",
-                Name = "Main Window Title",
+                DataPropertyName = "Hash",
+                Name = "Hash",
                 ReadOnly = true
             };
             dataGridView1.Columns.Add(col2);
@@ -64,18 +64,18 @@ namespace DialogDisplay
             };
             dataGridView1.Columns.Add(col3);
 
-            DataGridViewColumn col4 = new DataGridViewCheckBoxColumn
-            {
-                DataPropertyName = "Responding",
-                Name = "Responding",
-                ReadOnly = true
-            };
-            dataGridView1.Columns.Add(col4);
+            //DataGridViewColumn col4 = new DataGridViewCheckBoxColumn
+            //{
+            //    DataPropertyName = "Responding",
+            //    Name = "Responding",
+            //    ReadOnly = true
+            //};
+            //dataGridView1.Columns.Add(col4);
         }
 
-        private void SetSource(string[] args)
+        private void SetSource(string args)
         {
-            var data = System.IO.File.ReadAllText(@"C:\hashes.json");
+            var data = System.IO.File.ReadAllText(@"C:\" + args);
             List<ProcessObject> unmatched = JsonConvert.DeserializeObject<List<ProcessObject>>(data);
 
             foreach (var process in unmatched)
@@ -83,9 +83,9 @@ namespace DialogDisplay
                 bindingSource1.Add(new DataObj
                 {
                     ProcessName = process.ProcessName,
-                    MainWindowTitle = process.MainWindowTitle,
+                    Hash = process.Hash,
                     File = process.MainModule.FileName,
-                    Responding = process.Responding
+                    //Responding = process.Responding
                 });
             }
         }
@@ -100,7 +100,7 @@ namespace DialogDisplay
                 bindingSource1.Add(new DataObj
                 {
                     ProcessName = process.Name,
-                    MainWindowTitle = process.Name,
+                    Hash = process.Hash,
                     File = process.Path,
                     Responding = true
                 });
@@ -110,7 +110,7 @@ namespace DialogDisplay
         private class DataObj
         {
             public string ProcessName { get; set; }
-            public string MainWindowTitle { get; set; }
+            public string Hash { get; set; }
             public string File { get; set; }
             public bool Responding { get; set; }
         }

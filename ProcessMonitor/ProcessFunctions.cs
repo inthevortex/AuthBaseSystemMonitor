@@ -15,14 +15,21 @@ namespace ProcessMonitor
 
             foreach (var process in processes)
             {
-                var po = mapProcessObject.TransformToProcessObject(process);
-                if (!po.HashMatched)
+                try
                 {
-                    processObjects.Add(po);
+                    var po = mapProcessObject.TransformToProcessObject(process);
+                    if (!po.HashMatched)
+                    {
+                        processObjects.Add(po);
+                    }
+                }
+                catch (Exception)
+                {
+                    continue;
                 }
             }
 
-            filename = string.Format("UnmatchedHashes-{0}.json", DateTime.Now);
+            filename = "UnmatchedHashes.json";
             System.IO.File.WriteAllText(@"C:\" +filename, JsonConvert.SerializeObject(processObjects, Formatting.Indented));
 
             return processObjects;

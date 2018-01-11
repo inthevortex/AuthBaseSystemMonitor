@@ -7,6 +7,7 @@ namespace ProcessMonitor
     {
         public string POId { get; set; }
         public int FId { get; set; }
+        public string Hash { get; set; }
         public bool HashMatched { get; set; }
         public float CPUUsage { get; set; }
         //public float CPUTime { get; set; }

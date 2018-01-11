@@ -69,7 +69,7 @@ namespace FileHasher
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
                 FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\checksum.exe",
-                Arguments = "/a:" + hashAlgorithm + " " + filename
+                Arguments = "/a:" + hashAlgorithm + " \"" + filename + "\""
             };
 
             using (Process process = Process.Start(startInfo))
