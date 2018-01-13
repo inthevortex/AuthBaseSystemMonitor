@@ -55,7 +55,7 @@ namespace FileHasher
                 }
             }
 
-            System.Console.WriteLine("Number of files hashes is {0}.", files.Count);
+            //System.Console.WriteLine("Number of files hashes is {0}.", files.Count);
 
             return files;
         }
@@ -96,7 +96,7 @@ namespace FileHasher
                 files.Add(file, new FileInfoWithVersion(file));
             }
 
-            System.Console.WriteLine("FileList has {0} files.", filePaths.Count);
+            //System.Console.WriteLine("FileList has {0} files.", filePaths.Count);
 
             return files;
         }
