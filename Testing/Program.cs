@@ -109,9 +109,13 @@ namespace Testing
             //};
             //Process.Start(startInfo);
 
-            System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay());
+            //System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay());
 
             //RunTest("devenv");
+
+            VirusTotal.VirusTotal virusTotal = new VirusTotal.VirusTotal();
+            var output = virusTotal.InvokeSigCheck(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug");
+            Console.WriteLine(output);
         }
 
         private static void RunTest(string appName)
