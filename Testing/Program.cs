@@ -114,8 +114,8 @@ namespace Testing
             //RunTest("devenv");
 
             VirusTotal.VirusTotal virusTotal = new VirusTotal.VirusTotal();
-            var output = virusTotal.InvokeSigCheck(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug");
-            Console.WriteLine(output);
+            var output1 = virusTotal.SigCheckDirectory(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug");
+            var output2 = virusTotal.SigCheckFile(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
         }
 
         private static void RunTest(string appName)
