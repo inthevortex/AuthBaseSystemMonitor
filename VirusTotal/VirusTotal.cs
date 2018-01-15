@@ -136,5 +136,10 @@ namespace VirusTotal
 
             return outputs;
         }
+
+        //public List<T> ScanRunningProcesses()
+        //{
+
+        //}
     }
 }
