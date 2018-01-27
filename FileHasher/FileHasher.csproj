@@ -93,6 +93,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="FileHasher.db" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
