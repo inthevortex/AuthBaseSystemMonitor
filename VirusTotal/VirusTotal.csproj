@@ -60,7 +60,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SigCheckOutput.cs" />
-    <Compile Include="VirusTotal.cs" />
+    <Compile Include="VirusTotalService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\sigcheck64.exe" />

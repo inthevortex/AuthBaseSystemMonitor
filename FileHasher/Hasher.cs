@@ -22,11 +22,6 @@ namespace FileHasher
             _fileSearchPattern = fileSearchPattern;
         }
 
-        public void CreateJsonFile(List<File> files)
-        {
-            System.IO.File.WriteAllText(@"C:\hashes.json", JsonConvert.SerializeObject(files, Formatting.Indented));
-        }
-
         public List<File> HashSystem()
         {
             Dictionary<string, FileInfoWithVersion> filePathsWithInfo = GetFileList(_paths, _fileSearchPattern);

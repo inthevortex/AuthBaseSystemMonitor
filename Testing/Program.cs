@@ -111,10 +111,10 @@ namespace Testing
 
             //System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay());
 
-            //RunTest("devenv");
+            RunTest("devenv");
 
-            VirusTotal.VirusTotal virusTotal = new VirusTotal.VirusTotal();
-            var output1 = virusTotal.SigCheckDirectory(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug");
+            VirusTotal.VirusTotalService virusTotal = new VirusTotal.VirusTotalService();
+            var output1 = virusTotal.SigCheckDirectoryFull(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\packages");
             var output2 = virusTotal.SigCheckFile(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
         }
 

@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace VirusTotal
 {
-    public class VirusTotal
+    public class VirusTotalService
     {
         public SigCheckOutput SigCheckFile(string filepath)
         {
@@ -15,7 +15,7 @@ namespace VirusTotal
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
                 FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
-                Arguments = "-nobanner -h -v -vt -c " + filepath
+                Arguments = "-accepteula -nobanner -h -v -vt -c " + filepath
             };
 
             using (Process process = Process.Start(startInfo))
@@ -59,7 +59,7 @@ namespace VirusTotal
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
                 FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
-                Arguments = "-nobanner -h -e -s -v -vt -c " + directory
+                Arguments = "-accepteula -nobanner -h -e -s -v -vt -c " + directory
             };
 
             using (Process process = Process.Start(startInfo))
@@ -68,6 +68,8 @@ namespace VirusTotal
 
                 using (var reader = process.StandardOutput)
                 {
+                    string stroutput = reader.ReadToEnd();
+
                     if (!flag && !reader.EndOfStream)
                     {
                         reader.ReadLine();
