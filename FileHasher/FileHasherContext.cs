@@ -10,7 +10,7 @@ namespace FileHasher
         {
             ConnectionString = new SQLiteConnectionStringBuilder()
             {
-                DataSource = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\FileHasher.db",
+                DataSource = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\FileHasher\FileHasher.db",//@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\FileHasher.db",
                 ForeignKeys = true
             }.ConnectionString
         }, true)

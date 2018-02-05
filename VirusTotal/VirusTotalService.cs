@@ -5,6 +5,7 @@ namespace VirusTotal
 {
     public class VirusTotalService
     {
+        // Scan a single file
         public SigCheckOutput SigCheckFile(string filepath)
         {
             SigCheckOutput output = new SigCheckOutput();
@@ -14,7 +15,7 @@ namespace VirusTotal
                 UseShellExecute = false,
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
-                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
+                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\VirusTotal\Resources\sigcheck64.exe",//@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
                 Arguments = "-accepteula -nobanner -h -v -vt -c " + filepath
             };
 
@@ -49,6 +50,7 @@ namespace VirusTotal
             return output;
         }
 
+        // Scan all executable files in a directory recursively
         public List<SigCheckOutput> SigCheckDirectory(string directory)
         {
             List<SigCheckOutput> outputs = new List<SigCheckOutput>();
@@ -58,7 +60,7 @@ namespace VirusTotal
                 UseShellExecute = false,
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
-                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
+                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\VirusTotal\Resources\sigcheck64.exe",//@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
                 Arguments = "-accepteula -nobanner -h -e -s -v -vt -c " + directory
             };
 
@@ -68,8 +70,6 @@ namespace VirusTotal
 
                 using (var reader = process.StandardOutput)
                 {
-                    string stroutput = reader.ReadToEnd();
-
                     if (!flag && !reader.EndOfStream)
                     {
                         reader.ReadLine();
@@ -95,6 +95,7 @@ namespace VirusTotal
             return outputs;
         }
 
+        // Scan all files in a directory recursively
         public List<SigCheckOutput> SigCheckDirectoryFull(string directory)
         {
             List<SigCheckOutput> outputs = new List<SigCheckOutput>();
@@ -104,7 +105,7 @@ namespace VirusTotal
                 UseShellExecute = false,
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
-                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
+                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\VirusTotal\Resources\sigcheck64.exe",//@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
                 Arguments = "-nobanner -h -s -v -vt -c " + directory
             };
 

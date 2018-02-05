@@ -9,24 +9,30 @@ namespace FileHasher
     {
         [Column(Name = "ID", IsDbGenerated = true, IsPrimaryKey = true, DbType = "INTEGER")]
         [Key]
-        public int FId { get; set; }
-        [Column(Name = "Name", DbType = "VARCHAR")]
+        public int Id { get; set; }
+        [Column(Name = "Name", DbType = "TEXT")]
         public string Name { get; set; }
-        [Column(Name = "Path", DbType = "VARCHAR")]
+        [Column(Name = "Path", DbType = "TEXT")]
         public string Path { get; set; }
-        [Column(Name = "Hash", DbType = "VARCHAR")]
+        [Column(Name = "Hash", DbType = "TEXT")]
         public string Hash { get; set; }
-        [Column(Name = "CreationTimeUtc", DbType = "")]
+        [Column(Name = "CreationTimeUtc", DbType = "NUMERIC")]
         public DateTime CreationTimeUtc { get; set; }
-        [Column(Name = "LastAccessedTimeUtc", DbType = "")]
+        [Column(Name = "LastAccessedTimeUtc", DbType = "NUMERIC")]
         public DateTime LastAccessedTimeUtc { get; set; }
-        [Column(Name = "LastWriteTimeUtc", DbType = "")]
+        [Column(Name = "LastWriteTimeUtc", DbType = "NUMERIC")]
         public DateTime LastWriteTimeUtc { get; set; }
-        [Column(Name = "Length", DbType = "")]
+        [Column(Name = "Length", DbType = "INTEGER")]
         public long Length { get; set; }
-        [Column(Name = "ReadOnly", DbType = "")]
+        [Column(Name = "ReadOnly", DbType = "INTEGER")]
         public bool ReadOnly { get; set; }
-        [Column(Name = "Version", DbType = "VARCHAR")]
+        [Column(Name = "Version", DbType = "TEXT")]
         public string Version { get; set; }
+        [Column(Name = "VTDetection", DbType = "TEXT")]
+        public string VTDetection { get; set; }
+        [Column(Name = "Length", DbType = "INTEGER")]
+        public bool Whitelisted { get; set; }
+        [Column(Name = "Length", DbType = "INTEGER")]
+        public bool Checked { get; set; }
     }
 }

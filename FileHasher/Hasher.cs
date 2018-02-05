@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -8,49 +7,42 @@ namespace FileHasher
     public class Hasher
     {
         private string[] _paths;
-        private string _fileSearchPattern;
 
         public Hasher()
         {
             _paths = new string[] { "" };
-            _fileSearchPattern = "";
         }
 
-        public Hasher(string[] paths, string fileSearchPattern)
+        public Hasher(string[] paths)
         {
             _paths = paths;
-            _fileSearchPattern = fileSearchPattern;
         }
 
         public List<File> HashSystem()
         {
-            Dictionary<string, FileInfoWithVersion> filePathsWithInfo = GetFileList(_paths, _fileSearchPattern);
+            Dictionary<string, FileInfoWithVersion> filePathsWithInfo = GetFileList(_paths);
             List<File> files = new List<File>();
+            VirusTotal.VirusTotalService virusTotalService = new VirusTotal.VirusTotalService();
 
             foreach (string path in filePathsWithInfo.Keys)
             {
-                try
-                {
-                    files.Add(new File
-                    {
-                        Name = path.Substring(path.LastIndexOf("\\") + 1),
-                        Path = path,
-                        Hash = GetHash(path),
-                        CreationTimeUtc = filePathsWithInfo[path].FileInfo.CreationTimeUtc,
-                        LastAccessedTimeUtc = filePathsWithInfo[path].FileInfo.LastAccessTimeUtc,
-                        LastWriteTimeUtc = filePathsWithInfo[path].FileInfo.LastWriteTimeUtc,
-                        Length = filePathsWithInfo[path].FileInfo.Length,
-                        ReadOnly = filePathsWithInfo[path].FileInfo.IsReadOnly,
-                        Version = filePathsWithInfo[path].FileVersionInfo.FileVersion
-                    });
-                }
-                catch (IOException)
-                {
-                    continue;
-                }
-            }
+                var output = virusTotalService.SigCheckFile(path);
 
-            //System.Console.WriteLine("Number of files hashes is {0}.", files.Count);
+                files.Add(new File
+                {
+                    Name = path.Substring(path.LastIndexOf("\\") + 1),
+                    Path = path,
+                    Hash = output.SHA256,
+                    CreationTimeUtc = filePathsWithInfo[path].FileInfo.CreationTimeUtc,
+                    LastAccessedTimeUtc = filePathsWithInfo[path].FileInfo.LastAccessTimeUtc,
+                    LastWriteTimeUtc = filePathsWithInfo[path].FileInfo.LastWriteTimeUtc,
+                    Length = filePathsWithInfo[path].FileInfo.Length,
+                    ReadOnly = filePathsWithInfo[path].FileInfo.IsReadOnly,
+                    Version = filePathsWithInfo[path].FileVersionInfo.FileVersion,
+                    VTDetection = output.VTDetection,
+                    Whitelisted = true
+                });
+            }
 
             return files;
         }
@@ -76,14 +68,14 @@ namespace FileHasher
             return output.Substring(output.IndexOf("Hash:") + 5).Trim();
         }
 
-        private Dictionary<string, FileInfoWithVersion> GetFileList(string[] paths, string fileSearchPattern)
+        private Dictionary<string, FileInfoWithVersion> GetFileList(string[] paths)
         {
             List<string> filePaths = new List<string>();
             Dictionary<string, FileInfoWithVersion> files = new Dictionary<string, FileInfoWithVersion>();
 
             foreach (string path in paths)
             {
-                filePaths.AddRange(GetFileList(path, fileSearchPattern));
+                filePaths.AddRange(GetFileList(path));
             }
 
             foreach (string file in filePaths)
@@ -91,12 +83,10 @@ namespace FileHasher
                 files.Add(file, new FileInfoWithVersion(file));
             }
 
-            //System.Console.WriteLine("FileList has {0} files.", filePaths.Count);
-
             return files;
         }
 
-        private IEnumerable<string> GetFileList(string rootFolderPath, string fileSearchPattern)
+        private IEnumerable<string> GetFileList(string rootFolderPath)
         {
             Queue<string> pending = new Queue<string>();
             pending.Enqueue(rootFolderPath);
@@ -108,7 +98,7 @@ namespace FileHasher
 
                 try
                 {
-                    tmp = Directory.GetFiles(rootFolderPath, fileSearchPattern);
+                    tmp = Directory.GetFiles(rootFolderPath);
                 }
                 catch (System.Exception)
                 {

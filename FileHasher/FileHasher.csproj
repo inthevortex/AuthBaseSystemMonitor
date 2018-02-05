@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="FileHasherContext.cs" />
     <Compile Include="FileInfoWithVersion.cs" />
+    <Compile Include="FileRepository.cs" />
     <Compile Include="Hasher.cs" />
     <Compile Include="File.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,6 +104,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirusTotal\VirusTotal.csproj">
+      <Project>{9ad53f44-0e86-45ea-b69e-1e75dc8c1228}</Project>
+      <Name>VirusTotal</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.107.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.107.0\build\net46\System.Data.SQLite.Core.targets')" />

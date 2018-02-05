@@ -24,7 +24,7 @@ namespace Testing
             {
                 var otherResources = GetOtherResources(process.ProcessName);
                 processObjects[index++] = mapProcessObject.TransformToProcessObject(process, otherResources);
-                
+
             }
 
             return processObjects;
@@ -94,8 +94,12 @@ namespace Testing
 
         static void Main(string[] args)
         {
-            //Hasher hasher = new Hasher(new string[] { @"C:\Users\AuthBase\source\repos" }, "*");
-            //hasher.CreateJsonFile(hasher.HashSystem());
+            Hasher hasher = new Hasher(new string[] { @"D:\Angsuman\Repos\Platform_IMS\Appalachian\Appalachian_Development\Source\BizDIMS\FUNBizDIMS\MAPBizDIMS\bin\Debug" });//{ @"C:\Users\AuthBase\source\repos" });
+            var hashes = hasher.HashSystem();
+            FileHasherContext context = new FileHasherContext();
+            FileRepository repository = new FileRepository(context);
+
+            repository.SaveFile(hashes[0]);
             //var process = Process.GetProcessesByName("firefox")[0];
             //string path = process.MainModule.FileName;
 
@@ -111,11 +115,13 @@ namespace Testing
 
             //System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay());
 
-            RunTest("devenv");
+            //RunTest("devenv");
 
             VirusTotal.VirusTotalService virusTotal = new VirusTotal.VirusTotalService();
-            var output1 = virusTotal.SigCheckDirectoryFull(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\packages");
-            var output2 = virusTotal.SigCheckFile(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
+            //var output1 = virusTotal.SigCheckDirectoryFull(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\packages");
+            var output1 = virusTotal.SigCheckDirectory(@"D:\Angsuman\Repos\AuthBaseSystemMonitor\packages");
+            //var output2 = virusTotal.SigCheckFile(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
+            var output2 = virusTotal.SigCheckFile(@"D:\Angsuman\Repos\AuthBaseSystemMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
         }
 
         private static void RunTest(string appName)
