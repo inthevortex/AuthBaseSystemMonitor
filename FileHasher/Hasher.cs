@@ -10,7 +10,7 @@ namespace FileHasher
 
         public Hasher()
         {
-            _paths = new string[] { "" };
+            _paths = new string[] { @"C:\" };
         }
 
         public Hasher(string[] paths)
@@ -20,103 +20,86 @@ namespace FileHasher
 
         public List<File> HashSystem()
         {
-            Dictionary<string, FileInfoWithVersion> filePathsWithInfo = GetFileList(_paths);
             List<File> files = new List<File>();
-            VirusTotal.VirusTotalService virusTotalService = new VirusTotal.VirusTotalService();
+            VirusTotalService.VirusTotalService virusTotalService = new VirusTotalService.VirusTotalService();
 
-            foreach (string path in filePathsWithInfo.Keys)
+            foreach (string path in _paths)
             {
-                var output = virusTotalService.SigCheckFile(path);
+                var outputs = virusTotalService.SigCheckDirectory(path);
 
-                files.Add(new File
+                foreach (var output in outputs)
                 {
-                    Name = path.Substring(path.LastIndexOf("\\") + 1),
-                    Path = path,
-                    Hash = output.SHA256,
-                    CreationTimeUtc = filePathsWithInfo[path].FileInfo.CreationTimeUtc,
-                    LastAccessedTimeUtc = filePathsWithInfo[path].FileInfo.LastAccessTimeUtc,
-                    LastWriteTimeUtc = filePathsWithInfo[path].FileInfo.LastWriteTimeUtc,
-                    Length = filePathsWithInfo[path].FileInfo.Length,
-                    ReadOnly = filePathsWithInfo[path].FileInfo.IsReadOnly,
-                    Version = filePathsWithInfo[path].FileVersionInfo.FileVersion,
-                    VTDetection = output.VTDetection,
-                    Whitelisted = true
-                });
+                    var fileInfo = new FileInfoWithVersion(output.Path);
+                    
+                    files.Add(new File
+                    {
+                        Name = path.Substring(path.LastIndexOf("\\") + 1),
+                        Path = path,
+                        Hash = output.SHA256,
+                        CreationTimeUtc = fileInfo.FileInfo.CreationTimeUtc,
+                        LastAccessedTimeUtc = fileInfo.FileInfo.LastAccessTimeUtc,
+                        LastWriteTimeUtc = fileInfo.FileInfo.LastWriteTimeUtc,
+                        Length = fileInfo.FileInfo.Length,
+                        ReadOnly = fileInfo.FileInfo.IsReadOnly,
+                        Version = fileInfo.FileVersionInfo.FileVersion,
+                        VTDetection = output.VTDetection,
+                        Whitelisted = true
+                    }); 
+                }
             }
 
             return files;
         }
 
-        public string GetHash(string filename, string hashAlgorithm = "SHA256")
-        {
-            string output = "";
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                UseShellExecute = false,
-                CreateNoWindow = false,
-                RedirectStandardOutput = true,
-                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\checksum.exe",
-                Arguments = "/a:" + hashAlgorithm + " \"" + filename + "\""
-            };
+        //private Dictionary<string, FileInfoWithVersion> GetFileList(string[] paths)
+        //{
+        //    List<string> filePaths = new List<string>();
+        //    Dictionary<string, FileInfoWithVersion> files = new Dictionary<string, FileInfoWithVersion>();
 
-            using (Process process = Process.Start(startInfo))
-            {
-                output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-            }
+        //    foreach (string path in paths)
+        //    {
+        //        filePaths.AddRange(GetFileList(path));
+        //    }
 
-            return output.Substring(output.IndexOf("Hash:") + 5).Trim();
-        }
+        //    foreach (string file in filePaths)
+        //    {
+        //        files.Add(file, new FileInfoWithVersion(file));
+        //    }
 
-        private Dictionary<string, FileInfoWithVersion> GetFileList(string[] paths)
-        {
-            List<string> filePaths = new List<string>();
-            Dictionary<string, FileInfoWithVersion> files = new Dictionary<string, FileInfoWithVersion>();
+        //    return files;
+        //}
 
-            foreach (string path in paths)
-            {
-                filePaths.AddRange(GetFileList(path));
-            }
+        //private IEnumerable<string> GetFileList(string rootFolderPath)
+        //{
+        //    Queue<string> pending = new Queue<string>();
+        //    pending.Enqueue(rootFolderPath);
+        //    string[] tmp;
 
-            foreach (string file in filePaths)
-            {
-                files.Add(file, new FileInfoWithVersion(file));
-            }
+        //    while (pending.Count > 0)
+        //    {
+        //        rootFolderPath = pending.Dequeue();
 
-            return files;
-        }
+        //        try
+        //        {
+        //            tmp = Directory.GetFiles(rootFolderPath);
+        //        }
+        //        catch (System.Exception)
+        //        {
+        //            continue;
+        //        }
 
-        private IEnumerable<string> GetFileList(string rootFolderPath)
-        {
-            Queue<string> pending = new Queue<string>();
-            pending.Enqueue(rootFolderPath);
-            string[] tmp;
+        //        for (int i = 0; i < tmp.Length; i++)
+        //        {
+        //            yield return tmp[i];
+        //        }
 
-            while (pending.Count > 0)
-            {
-                rootFolderPath = pending.Dequeue();
+        //        tmp = Directory.GetDirectories(rootFolderPath);
 
-                try
-                {
-                    tmp = Directory.GetFiles(rootFolderPath);
-                }
-                catch (System.Exception)
-                {
-                    continue;
-                }
-
-                for (int i = 0; i < tmp.Length; i++)
-                {
-                    yield return tmp[i];
-                }
-
-                tmp = Directory.GetDirectories(rootFolderPath);
-
-                for (int i = 0; i < tmp.Length; i++)
-                {
-                    pending.Enqueue(tmp[i]);
-                }
-            }
-        }
+        //        for (int i = 0; i < tmp.Length; i++)
+        //        {
+        //            pending.Enqueue(tmp[i]);
+        //        }
+        //    }
+        //}
     }
 }

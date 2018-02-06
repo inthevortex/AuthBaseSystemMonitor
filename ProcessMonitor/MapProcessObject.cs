@@ -1,4 +1,5 @@
 ﻿using FileHasher;
+using FileHasher.VirusTotalService;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,11 @@ namespace ProcessMonitor
         public ProcessObject TransformToProcessObject(Process process, Dictionary<string, float> otherResources)
         {
             ProcessObject processObject = new ProcessObject();
-            Hasher hasher = new Hasher();
-            string hash = hasher.GetHash(process.MainModule.FileName);
+            VirusTotalService hasher = new VirusTotalService();
 
             try
             {
+                string hash = hasher.GetHash(process.MainModule.FileName);
                 processObject.HashMatched = CheckHash(hash);
                 processObject.CPUUsage = otherResources["CPUUsage"];
                 processObject.RAMUsage = otherResources["RAMUsage"];
@@ -23,7 +24,7 @@ namespace ProcessMonitor
                 processObject.Threads = otherResources["Threads"];
                 processObject.ReadBytes = otherResources["ReadBytes"];
                 processObject.WriteBytes = otherResources["WriteBytes"];
-                processObject.ReadOps = otherResources["ReeadOps"];
+                processObject.ReadOps = otherResources["ReadOps"];
                 processObject.WriteOps = otherResources["WriteOps"];
                 processObject.ProcessPriorityClass = process.PriorityClass;
                 processObject.PrivilegedProcessorTime = process.PrivilegedProcessorTime;
@@ -43,7 +44,7 @@ namespace ProcessMonitor
                 processObject.HandleCount = process.HandleCount;
                 processObject.HasExited = process.HasExited;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -54,7 +55,7 @@ namespace ProcessMonitor
         public ProcessObject TransformToProcessObject(Process process)
         {
             ProcessObject processObject = new ProcessObject();
-            Hasher hasher = new Hasher();
+            VirusTotalService hasher = new VirusTotalService();
 
             try
             {
@@ -88,15 +89,16 @@ namespace ProcessMonitor
 
         private bool CheckHash(string hash)
         {
-            string json = System.IO.File.ReadAllText(@"C:\hashes.json");
+            FileHasherContext context = new FileHasherContext();
+            FileRepository repository = new FileRepository(context);
 
-            return json.Contains(hash);
+            return repository.CheckHash(hash);
         }
 
         public void WriteToJsonFile(ProcessObject[] processObjects)
         {
             string json = JsonConvert.SerializeObject(processObjects, Formatting.Indented);
-            System.IO.File.WriteAllText(string.Format(@"C:\Users\AuthBase\Documents\ProcessStats\ProcessStat_{0}.json", DateTime.Now), json);
+            System.IO.File.WriteAllText(string.Format(@"C:\Users\AuthBase\Documents\ProcessStats\ProcessStat.json"), json);
         }
     }
 }

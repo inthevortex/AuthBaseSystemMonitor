@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FileHasher;
+using FileHasher.VirusTotalService;
 using Newtonsoft.Json;
 using ProcessMonitor;
 
@@ -27,7 +28,27 @@ namespace Testing
 
             }
 
+            mapProcessObject.WriteToJsonFile(processObjects);
+
             return processObjects;
+        }
+
+        public ProcessObject GetProcessInfo(string name)
+        {
+            var process = Process.GetProcessesByName(name);
+            ProcessObject[] processObjects = new ProcessObject[process.Length];
+            MapProcessObject mapProcessObject = new MapProcessObject();
+            int index = 0;
+
+            foreach (var proc in process)
+            {
+                var otherResources = GetOtherResources(proc.ProcessName);
+                processObjects[index++] = mapProcessObject.TransformToProcessObject(proc, otherResources);
+            }
+
+            mapProcessObject.WriteToJsonFile(processObjects);
+
+            return processObjects[0];
         }
 
         private Dictionary<string, float> GetOtherResources(string processName)
@@ -46,7 +67,7 @@ namespace Testing
             float[] disk;
             Dictionary<string, float> otherResources = new Dictionary<string, float>();
 
-            while (index++ <= 1)
+            while (index <= 1)
             {
                 m = process_mem.NextValue() / 1024 / 1024;
                 usage = process_cpu.NextValue() / total_cpu.NextValue() * 100;
@@ -54,7 +75,7 @@ namespace Testing
                 th = process_threads.NextValue();
                 disk = new float[] { readOpSec.NextValue(), writeOpSec.NextValue(), readBytesSec.NextValue() / 1024, writeByteSec.NextValue() / 1024 };
 
-                if (index == 1)
+                if (index++ >= 1)
                 {
                     otherResources.Add("CPUUsage", usage);
                     otherResources.Add("RAMUsage", m);
@@ -70,36 +91,31 @@ namespace Testing
             return otherResources;
         }
 
-        //static void Main(string[] args)
-        //{
-        //var processes = Process.GetProcesses();
-        //ProcessObject[] processObjects = new ProcessObject[processes.Length];
-        //MapProcessObject mapProcessObject = new MapProcessObject();
-        //int index = 0;
+        static void CheckHashes()
+        {
+            ProcessFunctions processFunctions = new ProcessFunctions();
 
-        //foreach (var process in processes)
-        //{
-        //    processObjects[index++] = mapProcessObject.TransformToProcessObject(process);
-        //}
+            var unmatched = processFunctions.UnmatchedHash(out string filename);
 
-        //try
-        //{
-        //    System.IO.File.WriteAllText(@"C:\Users\AuthBase\Documents\ProcessStats.json", JsonConvert.SerializeObject(processObjects, Formatting.Indented));
-        //}
-        //catch (Exception)
-        //{
-        //    throw;
-        //}
-        //}
+            if (unmatched.Count != 0)
+            {
+                System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay(new string[] { filename }));
+            }
+        }
 
         static void Main(string[] args)
         {
-            Hasher hasher = new Hasher(new string[] { @"D:\Angsuman\Repos\Platform_IMS\Appalachian\Appalachian_Development\Source\BizDIMS\FUNBizDIMS\MAPBizDIMS\bin\Debug" });//{ @"C:\Users\AuthBase\source\repos" });
+            Hasher hasher = new Hasher(new string[] { @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\packages\EntityFramework.6.2.0" });
             var hashes = hasher.HashSystem();
             FileHasherContext context = new FileHasherContext();
             FileRepository repository = new FileRepository(context);
 
-            repository.SaveFile(hashes[0]);
+            //repository.SaveFiles(hashes);
+
+            Program program = new Program();
+            var objs = program.GetProcessInfo("devenv");
+            CheckHashes();
+
             //var process = Process.GetProcessesByName("firefox")[0];
             //string path = process.MainModule.FileName;
 
@@ -115,13 +131,11 @@ namespace Testing
 
             //System.Windows.Forms.Application.Run(new DialogDisplay.DialogDisplay());
 
-            //RunTest("devenv");
+            RunTest("devenv");
 
-            VirusTotal.VirusTotalService virusTotal = new VirusTotal.VirusTotalService();
-            //var output1 = virusTotal.SigCheckDirectoryFull(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\packages");
-            var output1 = virusTotal.SigCheckDirectory(@"D:\Angsuman\Repos\AuthBaseSystemMonitor\packages");
-            //var output2 = virusTotal.SigCheckFile(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
-            var output2 = virusTotal.SigCheckFile(@"D:\Angsuman\Repos\AuthBaseSystemMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
+            VirusTotalService virusTotal = new VirusTotalService();
+            var output1 = virusTotal.SigCheckDirectoryFull(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\packages");
+            var output2 = virusTotal.SigCheckFile(@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\AuthBaseMonitoringService\bin\Debug\AuthBaseMonitoringService.exe");
         }
 
         private static void RunTest(string appName)

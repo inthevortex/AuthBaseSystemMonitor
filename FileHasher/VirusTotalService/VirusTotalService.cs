@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace VirusTotal
+namespace FileHasher.VirusTotalService
 {
     public class VirusTotalService
     {
@@ -15,7 +15,7 @@ namespace VirusTotal
                 UseShellExecute = false,
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
-                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\VirusTotal\Resources\sigcheck64.exe",//@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
+                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\sigcheck64.exe",
                 Arguments = "-accepteula -nobanner -h -v -vt -c " + filepath
             };
 
@@ -60,7 +60,7 @@ namespace VirusTotal
                 UseShellExecute = false,
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
-                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\VirusTotal\Resources\sigcheck64.exe",//@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
+                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\sigcheck64.exe",
                 Arguments = "-accepteula -nobanner -h -e -s -v -vt -c " + directory
             };
 
@@ -105,7 +105,7 @@ namespace VirusTotal
                 UseShellExecute = false,
                 CreateNoWindow = false,
                 RedirectStandardOutput = true,
-                FileName = @"D:\Angsuman\Repos\AuthBaseSystemMonitor\VirusTotal\Resources\sigcheck64.exe",//@"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\VirusTotal\Resources\sigcheck64.exe",
+                FileName = @"C:\Users\AuthBase\source\repos\AuthBaseSystemIOMonitor\FileHasher\Resources\sigcheck64.exe",
                 Arguments = "-nobanner -h -s -v -vt -c " + directory
             };
 
@@ -138,6 +138,12 @@ namespace VirusTotal
             }
 
             return outputs;
+        }
+
+        // Get SHA256 hash of a single file
+        public string GetHash(string filepath)
+        {
+            return SigCheckFile(filepath).SHA256;
         }
 
         //public List<T> ScanRunningProcesses()

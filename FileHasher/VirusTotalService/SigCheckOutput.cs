@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VirusTotal
+namespace FileHasher.VirusTotalService
 {
     public class SigCheckOutput
     {
